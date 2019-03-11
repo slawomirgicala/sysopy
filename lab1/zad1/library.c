@@ -1,6 +1,7 @@
 #include "library.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 struct search_wrapper* init(int size){
 
@@ -55,7 +56,82 @@ int search(struct search_wrapper* sw){
         exit(-1);
     }
 
-    //zmierz dlugosc pliku
-    //zaalokuj pamiec
-    //[rzepisz rzeczy z plku do zaalokowanej pamieci
+    FILE* buffer = fopen(sw->tmp_file, "r");
+    if (buffer == NULL){
+        fprintf(stderr, "There is no such temporary file");
+        exit(-1);
+    }
+
+    fseek(buffer, 0, 2);
+    long buffer_size = ftell(buffer);
+    rewind(buffer);
+
+    sw->search_results[i] = calloc(1, buffer_size + 1);
+    if (sw->search_results[i] == NULL){
+        fprintf(stderr, "Could not allocate block");
+        fclose(buffer);
+        exit(-1);
+    }
+
+    fread(sw->search_results[i],buffer_size,1,buffer);
+
+    fclose(buffer);
+
+    return i;
 }
+
+void remove_block(struct search_wrapper* sw, int index){
+    if (sw == NULL || sw->search_results == NULL){
+        fprintf(stderr, "Block does not exist");
+        exit(-1);
+    }
+    if (index < 0 || index >= sw->size){
+        fprintf(stderr, "Index is out of results array boundries");
+        exit(-1);
+    }
+    if (sw->search_results[index] != NULL){
+        free(sw->search_results[index]);
+        sw->search_results[index] = NULL;
+    }
+}
+
+void delete_search_wrapper(struct search_wrapper* sw) {
+    if (sw != NULL) {
+        if (sw->search_results != NULL) {
+            for (int i = 0; i < sw->size; i++) {
+                if (sw->search_results[i] != NULL)
+                    free(sw->search_results[i]);
+            }
+            free(sw->search_results);
+        }
+        free(sw);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

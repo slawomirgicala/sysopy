@@ -1,7 +1,6 @@
 #ifndef LIBRARY_LIBRARY_H
 #define LIBRARY_LIBRARY_H
 
-void hello(void);
 
 typedef struct search_wrapper{
     int size;
@@ -19,5 +18,6 @@ int search(struct search_wrapper* sw);
 
 void remove_block(struct search_wrapper* sw, int index);
 
+void delete_search_wrapper(struct search_wrapper* sw);
 
 #endif
