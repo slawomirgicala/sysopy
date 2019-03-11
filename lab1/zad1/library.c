@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct search_wrapper* init(int size){
 
@@ -13,7 +14,7 @@ struct search_wrapper* init(int size){
     struct search_wrapper* sw = calloc(1, sizeof(struct search_wrapper));
     char** results = calloc(size, sizeof(char*));
 
-    if (sw == NULL || array == NULL){
+    if (sw == NULL || results == NULL){
         fprintf(stderr, "Could not allocate memory");
         exit(-1);
     }
@@ -32,20 +33,7 @@ void set_search_rules(struct search_wrapper* sw, char* directory, char* file, ch
 
 }
 
-int search(struct search_wrapper* sw){
-
-    if (sw == NULL || sw->search_results == NULL || sw->directory == NULL || sw->file == NULL || sw->tmp_file == NULL){
-        fprintf(stderr, "Correct data is not specified");
-        exit(-1);
-    }
-
-    char* command = calloc(1,strlen(bt->dir) + strlen(bt->file) + strlen(bt->temp) + 25);
-    sprintf(command, "find \"%s\" -iname \"%s\" > \"%s\"", sw->directory, sw->file, sw->tmp_file);
-
-    system(command);
-
-    free(command);
-
+int allocate_block(struct search_wrapper* sw){
     int i = 0;
     while (i < sw->size && sw->search_results[i] != NULL){
         i++;
@@ -76,8 +64,26 @@ int search(struct search_wrapper* sw){
     fread(sw->search_results[i],buffer_size,1,buffer);
 
     fclose(buffer);
-
     return i;
+}
+
+
+
+
+void search(struct search_wrapper* sw){
+
+    if (sw == NULL || sw->search_results == NULL || sw->directory == NULL || sw->file == NULL || sw->tmp_file == NULL){
+        fprintf(stderr, "Correct data is not specified");
+        exit(-1);
+    }
+
+    char* command = calloc(1,strlen(sw->directory) + strlen(sw->file) + strlen(sw->tmp_file) + 25);
+    sprintf(command, "find \"%s\" -iname \"%s\" > \"%s\"", sw->directory, sw->file, sw->tmp_file);
+
+    system(command);
+
+    free(command);
+
 }
 
 void remove_block(struct search_wrapper* sw, int index){
@@ -107,27 +113,6 @@ void delete_search_wrapper(struct search_wrapper* sw) {
         free(sw);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
