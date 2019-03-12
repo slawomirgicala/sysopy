@@ -38,7 +38,7 @@ void print_time_keeper(time_keeper* tk, const char* type){
     printf("Real time: %.5f\n", tk->real_time);
     printf("User time: %.5f\n", tk->user_time);
     printf("System time: %.5f\n", tk->system_time);
-    FILE* raport = fopen("./raport2.txt","a");
+    FILE* raport = fopen("./raport3b.txt","a");
     if (raport == NULL){
         printf("%s", "Cannot make raport");
         exit(-1);

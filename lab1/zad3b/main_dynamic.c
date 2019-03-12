@@ -3,8 +3,19 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/times.h>
-#include "library.h"
+//#include "library.h"
+#include <dlfcn.h>
 
+
+
+
+struct search_wrapper{
+    int size;
+    char** search_results;
+    char* directory;
+    char* file;
+    char* tmp_file;
+};
 
 
 typedef struct time_keeper{
@@ -38,7 +49,7 @@ void print_time_keeper(time_keeper* tk, const char* type){
     printf("Real time: %.5f\n", tk->real_time);
     printf("User time: %.5f\n", tk->user_time);
     printf("System time: %.5f\n", tk->system_time);
-    FILE* raport = fopen("./raport2.txt","a");
+    FILE* raport = fopen("./raport3b.txt","a");
     if (raport == NULL){
         printf("%s", "Cannot make raport");
         exit(-1);
@@ -51,6 +62,16 @@ void print_time_keeper(time_keeper* tk, const char* type){
 }
 
 
+struct search_wrapper* (*init)(int);
+void (*search)(struct search_wrapper*);
+int (*allocate_block)(struct search_wrapper*);
+void (*remove_block)(struct search_wrapper*, int);
+void (*delete_search_wrapper)(struct search_wrapper*);
+void (*set_search_rules)(struct search_wrapper*, char*, char*, char*);
+
+
+
+
 int main(int argc, char** argv) {
 
     if (argc < 2){
@@ -60,6 +81,26 @@ int main(int argc, char** argv) {
         printf("r index (to remove block at given index number)\n");
         printf("ad number (to add and remove block number times)\n");
         exit(-1);
+    }
+
+    void* lib_handle;
+
+    lib_handle = dlopen("./library.so", RTLD_LAZY);
+    if (!lib_handle) {
+        fprintf(stderr, "Error during dlopen(): %s\n", dlerror());
+        exit(1);
+    }
+
+    init = dlsym(lib_handle,"init");
+    search = dlsym(lib_handle,"search");
+    allocate_block = dlsym(lib_handle,"allocate_block");
+    remove_block = dlsym(lib_handle,"remove_block");
+    delete_search_wrapper = dlsym(lib_handle,"delete_search_wrapper");
+    set_search_rules = dlsym(lib_handle, "set_search_rules");
+
+    if (init == NULL || search == NULL || allocate_block == NULL || remove_block == NULL || delete_search_wrapper == NULL){
+        fprintf(stderr, "Error during dlsym(): %s\n", dlerror());
+        exit(1);
     }
 
     time_keeper* searching_time = prepare_time_keeper();
@@ -170,5 +211,8 @@ int main(int argc, char** argv) {
     free(allocating_time);
     free(add_and_rem_time);
     free(removing_time);
+
+    dlclose(lib_handle);
+
     return 0;
 }
