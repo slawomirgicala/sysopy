@@ -64,11 +64,11 @@ void sort_lib(const char* filepath, int record_length, int records_number){
         if (i * record_length != min_pos){
             fseek(file, i * record_length, SEEK_SET);
             fread(buffer1, sizeof(char), record_length, file);
-            fseek(file, min_pos * record_length, SEEK_SET);
+            fseek(file, min_pos, SEEK_SET);      //samo min_pos
             fread(buffer2, sizeof(char), record_length, file);
             fseek(file, i * record_length, SEEK_SET);
             fwrite(buffer2, sizeof(char), record_length, file);
-            fseek(file, min_pos * record_length, SEEK_SET);
+            fseek(file, min_pos, SEEK_SET);
             fwrite(buffer1, sizeof(char), record_length, file);
         }
     }
