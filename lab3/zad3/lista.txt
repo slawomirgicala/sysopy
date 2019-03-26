@@ -1,0 +1,1 @@
+./zmiana.txt 2
