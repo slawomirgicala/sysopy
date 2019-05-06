@@ -177,6 +177,8 @@ void process(message* msg){
                     }
                 }
             }
+            char* value = "friends added";
+            send_message(value,get_client_queue(msg->sender),FRIENDS);
         }else if (msg->type == ADD){
             for (int i = 0; i < CLIENTS_MAX; ++i) {
                 if (clients[i] != NULL){
@@ -207,6 +209,8 @@ void process(message* msg){
                     }
                 }
             }
+            char* value = "friends updated";
+            send_message(value,get_client_queue(msg->sender),ADD);
         }else if (msg->type == DEL){
             for (int i = 0; i < CLIENTS_MAX; ++i) {
                 if (clients[i] != NULL){
@@ -229,6 +233,8 @@ void process(message* msg){
                     }
                 }
             }
+            char* value = "friends updated";
+            send_message(value,get_client_queue(msg->sender),DEL);
         }else if (msg->type == ECHO){
             int queue = clients[get_client_position(msg->sender)]->queue_id;  //              ID
             if (queue != -1){
@@ -292,6 +298,8 @@ void process(message* msg){
                     }
                 }
             }
+            char* value = "";
+            send_message(value,get_client_queue(msg->sender),TOFRIENDS);
         }else if (msg->type == TOONE){
 
             int id = msg->sender;
@@ -324,6 +332,8 @@ void process(message* msg){
                 }
             }
 
+            char* value = "";
+            send_message(value,get_client_queue(msg->sender),TOONE);
         }else if (msg->type == STOP){
             for (int i = 0; i < CLIENTS_MAX; ++i) {
                 if (clients[i] != NULL){

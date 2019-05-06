@@ -164,6 +164,13 @@ int main(){
 
 
     while (run){
+
+        message whatever;
+
+        while(msgrcv(client_queue, &whatever, (size_t) MESSAGE_SIZE, 0, MSG_NOERROR | IPC_NOWAIT) != -1){
+            printf("%s", whatever.value);
+        }
+
         printf("\n%d@serv: >\t ", my_id);
         getline(&buffer,&bufsize,stdin);
         char type_str[MSG_LEN_MAX];
@@ -192,6 +199,7 @@ int main(){
             exit(0);
         }
         printf("%s", msg.value);
+
     }
 
 
