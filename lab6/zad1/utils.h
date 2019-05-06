@@ -5,6 +5,8 @@
 #ifndef SYSOPY_UTILS_H
 #define SYSOPY_UTILS_H
 
+#include <stdlib.h>
+#include <stdio.h>
 
 const char PATH[] = "HOME";
 const int PROJ_ID = 2137;
@@ -17,8 +19,8 @@ const int PROJ_ID = 2137;
 
 typedef struct message{
     long type;
-    pid_t sender;
-    int client_id;
+    int sender;
+    //int client_id;
     char value[MSG_LEN_MAX];
 
 }message;
@@ -50,6 +52,8 @@ key_t get_key() {
     }
     return key;
 }
+
+
 
 
 
