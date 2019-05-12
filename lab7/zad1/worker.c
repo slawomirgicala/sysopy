@@ -122,7 +122,7 @@ int main(int argc, char** argv){
             }
             return_sem(semid, 0);
             printf("Worker: %d - Time: %sWaiting...\n\n", getpid(), get_ascii_time());
-            usleep(100000);
+            usleep(1000000);
         }
         if (number_of_cycles != -1) number_of_cycles--;
     }

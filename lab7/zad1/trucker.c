@@ -141,9 +141,22 @@ int main(int argc, char** argv){
             printf("No package on the belt, waiting...\n\n");
         }
         return_sem(semid, 0);
-        usleep(100000);
+        usleep(1000000);
     }
 
+    take_sem(semid, 0);
+
+    while ((next_package_weight = peek(shm_address)) != -1){
+        if (actual_truck_weight + next_package_weight > truck_capacity){
+            printf("Truck is full\nTruck leaves\nNew empty truck arrives\n\n");
+            actual_truck_weight = 0;
+        } else{
+            package* next = pop(shm_address);
+            printf("Packing package into the truck:\nFrom: %d\nJourney time: %f\nWeight: %d\nTruck free place: %d\nActual mass: %d\n\n",
+                   next->worker_pid, get_current_time()-next->pack_time, next->weight, truck_capacity-actual_truck_weight, actual_truck_weight);
+            actual_truck_weight += next_package_weight;
+        }
+    }
 
 
 
