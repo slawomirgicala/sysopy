@@ -24,6 +24,7 @@
 int truck_capacity;
 int belt_capacity;
 int belt_size;
+int actual_truck_weight;
 
 int run = 1;
 
@@ -45,6 +46,7 @@ void handle_signal(){
     act.sa_flags = 0;
     sigaction(SIGINT, &act, NULL);
 }
+
 
 
 
@@ -117,8 +119,27 @@ int main(int argc, char** argv){
     printf("queue has package: %d", peek(shm_address));*/ //NICE!
 
 
+    printf("%s", "Empty truck arrives\n\n");
+    actual_truck_weight = 0;
+    int next_package_weight;
     while(run){
-
+        take_sem(semid, 0);
+        next_package_weight = peek(shm_address);
+        if (next_package_weight != -1){
+            if (actual_truck_weight + next_package_weight > truck_capacity){
+                printf("Truck is full\nTruck leaves\nNew empty truck arrives\n\n");
+                actual_truck_weight = 0;
+            } else{
+                package* next = pop(shm_address);
+                printf("Packing package into the truck:\nFrom: %d\nJourney time: %f\nWeight: %d\nTruck free place: %d\nActual mass: %d\n\n",
+                        next->worker_pid, getCurrentTime()-next->pack_time, next->weight, truck_capacity-actual_truck_weight, actual_truck_weight);
+                actual_truck_weight += next_package_weight;
+            }
+        } else{
+            printf("No package on the belt, waiting...\n\n");
+        }
+        return_sem(semid, 0);
+        sleep(1);
     }
 
 

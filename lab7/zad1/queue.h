@@ -9,7 +9,14 @@
 
 #include <stdio.h>
 #include <errno.h>
-
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/sem.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 #define SEMKEYPATH "/home"
 #define SEMKEYID 21
@@ -19,9 +26,19 @@
 
 
 
+double getCurrentTime() {
+    struct timeval currentTime;
+    gettimeofday(&currentTime, NULL);
+    return currentTime.tv_sec + currentTime.tv_usec *  1e-6;
+}
+
+
+
 
 typedef struct package{
     int weight;
+    pid_t worker_pid;
+    double pack_time;
 }package;
 
 
@@ -84,6 +101,28 @@ int peek(belt* b){
 }
 
 
+
+
+
+void take_sem(int semid, unsigned short sem_num){
+    struct sembuf buf;
+    buf.sem_num = sem_num;
+    buf.sem_op = -1;
+    buf.sem_flg = 0;
+    if (semop(semid, &buf, 1) == -1){
+        fprintf(stderr, "error with taking semaphore");
+    }
+}
+
+void return_sem(int semid, unsigned short sem_num){
+    struct sembuf buf;
+    buf.sem_num = sem_num;
+    buf.sem_op = 1;
+    buf.sem_flg = 0;
+    if (semop(semid, &buf, 1) == -1){
+        fprintf(stderr, "error with returning semaphore");
+    }
+}
 
 
 
