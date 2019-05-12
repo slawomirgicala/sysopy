@@ -17,22 +17,34 @@
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <time.h>
 
 #define SEMKEYPATH "/home"
 #define SEMKEYID 21
 #define SHMKEYPATH "/home"
 #define SHMKEYID 37
 
+//extern int belt_size;
 
 
 
-double getCurrentTime() {
-    struct timeval currentTime;
-    gettimeofday(&currentTime, NULL);
-    return currentTime.tv_sec + currentTime.tv_usec *  1e-6;
+double get_current_time() {
+    struct timeval current_time;
+    gettimeofday(&current_time, NULL);
+    return current_time.tv_sec + current_time.tv_usec *  1e-6;
 }
 
+char* get_ascii_time(){
+    struct tm *newtime;
+    time_t ltime;
 
+/* Get the time in seconds */
+    time(&ltime);
+/* Convert it to the structure tm */
+    newtime = localtime(&ltime);
+
+    return asctime(newtime);
+}
 
 
 typedef struct package{
@@ -54,7 +66,7 @@ typedef struct belt{
 
 
 int is_full(belt* b){
-    if ((b->front = b->rear+1) || (b->front == 0 && b->rear == b->size-1)) return 1;
+    if ((b->front == b->rear+1) || (b->front == 0 && b->rear == b->size-1)) return 1;
     return 0;
 }
 

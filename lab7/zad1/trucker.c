@@ -16,6 +16,7 @@
 #include <signal.h>
 #include <sys/msg.h>
 #include <ctype.h>
+#include <time.h>
 
 
 
@@ -46,6 +47,7 @@ void handle_signal(){
     act.sa_flags = 0;
     sigaction(SIGINT, &act, NULL);
 }
+
 
 
 
@@ -90,7 +92,7 @@ int main(int argc, char** argv){
         fprintf(stderr, "Setting semaphore value, initialization");
     }
 
-    size_t shm_seg = 4*sizeof(int) + belt_capacity*sizeof(package) + 100;
+    size_t shm_seg = 4*sizeof(int) + belt_size*sizeof(package) + 100;
 
     shmid = shmget(shmkey, shm_seg, 0666 | IPC_CREAT | IPC_EXCL);
 
@@ -132,14 +134,14 @@ int main(int argc, char** argv){
             } else{
                 package* next = pop(shm_address);
                 printf("Packing package into the truck:\nFrom: %d\nJourney time: %f\nWeight: %d\nTruck free place: %d\nActual mass: %d\n\n",
-                        next->worker_pid, getCurrentTime()-next->pack_time, next->weight, truck_capacity-actual_truck_weight, actual_truck_weight);
+                        next->worker_pid, get_current_time()-next->pack_time, next->weight, truck_capacity-actual_truck_weight, actual_truck_weight);
                 actual_truck_weight += next_package_weight;
             }
         } else{
             printf("No package on the belt, waiting...\n\n");
         }
         return_sem(semid, 0);
-        sleep(1);
+        usleep(100000);
     }
 
 

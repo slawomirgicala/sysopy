@@ -2,15 +2,15 @@ CC = gcc -Wall -std=c99
 
 .PHONY: clean
 
-all: trucker
+all: trucker worker
 
 
 
-trucker: trucker.c
+trucker: trucker.c queue.h
 	$(CC) -o trucker trucker.c
 
-client: client.c
-	$(CC) -o client client.c
+worker: worker.c queue.h
+	$(CC) -o worker worker.c
 
 clean:
-	rm -f trucker
+	rm -f trucker worker
