@@ -185,6 +185,43 @@ int main(){
         b = str_cut(buffer,0,5);
         strcpy(msg.value, b); //zrobic cos jak add i del bez arg
 
+        if (strcmp(type_str,"READ") == 0){
+            FILE * fp;
+            char * line = NULL;
+            size_t len = 0;
+            ssize_t read;
+
+            fp = fopen(b, "r");
+            if (fp == NULL){
+                fprintf(stderr,"cannot open file");
+            }
+            while ((read = getline(&line, &len, fp)) != -1) {
+
+                char type_str1[MSG_LEN_MAX];
+                strncpy(type_str1, line, 4);
+                type_str[4] = 0;
+                long type1 = get_type(type_str1);
+                b = str_cut(line,0,5);
+                strcpy(msg.value, b);
+                msg.sender = my_id;
+                msg.type = type;
+                send_message(msg, server_queue);
+                if (type == STOP) {
+                    msgctl(client_queue, IPC_RMID, NULL);
+                    exit(0);
+                }
+                msgrcv(client_queue, &msg, (size_t) MESSAGE_SIZE, 0, MSG_NOERROR);
+                if (msg.type == STOP){
+                    msgctl(client_queue, IPC_RMID, NULL);
+                    exit(0);
+                }
+                printf("%s", msg.value);
+            }
+
+            fclose(fp);
+            if (line)
+                free(line);
+        }
 
         msg.sender = my_id;
         msg.type = type;

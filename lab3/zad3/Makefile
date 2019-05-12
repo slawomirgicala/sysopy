@@ -1,6 +1,6 @@
 CC = gcc -Wall -std=c99
 
-.PHONY: clean clean_arch
+.PHONY: clean clean_arch monitor tester
 
 monitor:
 	$(CC) -o monitor main.c

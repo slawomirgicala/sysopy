@@ -170,11 +170,14 @@ int monitor(char* file_path, unsigned int period, unsigned int time, int mode, r
     pid_t child_pid = fork();
 
     if (child_pid == 0) {
-        struct rlimit cpu_limit;
-        struct rlimit vmem_limit;
+        struct rlimit cpu_limit1;
+        struct rlimit vmem_limit1;
 
-        cpu_limit.rlim_cur = cpu_limit.rlim_max = cpu;
-        vmem_limit.rlim_cur = vmem_limit.rlim_max = vmem;
+        cpu_limit1.rlim_cur = cpu_limit1.rlim_max = cpu;
+        vmem_limit1.rlim_cur = vmem_limit1.rlim_max = vmem;
+
+        const struct rlimit cpu_limit = cpu_limit1;
+        const struct rlimit vmem_limit = vmem_limit1;
 
         if (setrlimit(RLIMIT_CPU, &cpu_limit) == -1){
             printf("Cannot set resource limit for cpu for proces: %d", (int) getpid());
@@ -184,6 +187,13 @@ int monitor(char* file_path, unsigned int period, unsigned int time, int mode, r
             printf("Cannot set resource limit for virtual memory for proces: %d", (int) getpid());
             exit(0);
         }
+
+        getrlimit(RLIMIT_AS,&vmem_limit1);
+        getrlimit(RLIMIT_CPU,&cpu_limit1);
+        printf("limit for cpu  %ld\n", cpu_limit1.rlim_max);
+        printf("limit for as  %ld\n", vmem_limit1.rlim_max);
+
+
 
         if (mode == 1)
             monitor1(file_path, period, time);
