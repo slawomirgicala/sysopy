@@ -3,6 +3,7 @@
 //
 
 
+#define _XOPEN_SOURCE 500
 
 #include "queue.h"
 #include <stdlib.h>
@@ -12,6 +13,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/shm.h>
+#include <signal.h>
+#include <sys/msg.h>
+#include <ctype.h>
 
 
 
@@ -21,12 +25,26 @@ int truck_capacity;
 int belt_capacity;
 int belt_size;
 
+int run = 1;
 
 //void set_sem_value(int semid, int semnum, int value) {
 //    if (semctl(semid, semnum, SETVAL, value) == -1) {
 //        fprintf(stderr, "Setting semaphore value");
 //    }
 //}
+
+
+void handler(int sig) {
+    run = 0;
+}
+
+void handle_signal(){
+    struct sigaction act;
+    act.sa_handler = handler;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+    sigaction(SIGINT, &act, NULL);
+}
 
 
 
@@ -43,6 +61,7 @@ int main(int argc, char** argv){
         return -1;
     }
 
+    handle_signal();
 
     truck_capacity = atoi(argv[1]);
     belt_capacity = atoi(argv[2]);
@@ -98,9 +117,14 @@ int main(int argc, char** argv){
     printf("queue has package: %d", peek(shm_address));*/ //NICE!
 
 
+    while(run){
 
-    
+    }
 
+
+
+
+    //printf("%s", "after infnite loop");
 
 
 
